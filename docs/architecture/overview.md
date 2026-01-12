@@ -12,9 +12,9 @@ QQuotes is a ground-up reimagining of the [dwyl/quotes](https://github.com/dwyl/
 3. **Reliability**: 100% test coverage on core logic, comprehensive CI/CD
 4. **Modern DX**: Tree-shakeable ESM, excellent IDE support, minimal dependencies
 5. **Multi-platform**: npm package, REST API, CLI, potential future Rust/WASM core
+6. **Personalization**: User-managed personal quote repository with Git-based synchronization support.
 
 ### Non-Goals
 - Real-time collaborative editing of quotes
-- User accounts or personalization
-- Quote submission through the API (curated list only)
+- Quote submission through the API to the *global* database (personal curation only)
 - Mobile native SDKs (web-first approach)

@@ -36,6 +36,7 @@
   "devDependencies": {
     "@size-limit/preset-small-lib": "^11.2.0",
     "@types/bun": "latest",
+    "fast-check": "^4.5.3",
     "mitata": "^1.0.34",
     "size-limit": "^11.2.0",
     "tsup": "^8.3.5",

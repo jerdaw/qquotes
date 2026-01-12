@@ -15,7 +15,9 @@ The API is hosted on Cloudflare Workers.
 | GET | `/quotes/{id}` | Get quote by ID |
 | GET | `/authors` | List all authors |
 | GET | `/tags` | List all tags |
+| GET | `/tags` | List all tags |
 | GET | `/stats` | Get collection statistics |
+| POST | `/personal` | Add or update a personal quote |
 
 ## OpenAPI Spec
 
@@ -61,4 +63,10 @@ paths:
     - `X-RateLimit-Reset`
 
 ### CORS
-Allowed from all origins (`*`) for `GET` and `OPTIONS` requests.
+Allowed from all origins (`*`) for `GET` and `OPTIONS` requests. `POST` requests are allowed from configured origins.
+
+### Personal Quotes
+To manage personal quotes, use the `/personal` endpoint.
+- **Add**: `POST /personal` with `{ text, author, tags }`.
+- **Approve/Shadow**: `POST /personal` with `{ id, ... }` to override a system quote.
+- **Filter**: Use `?mode=personal`, `mixed`, or `all` on `/quotes/random`.

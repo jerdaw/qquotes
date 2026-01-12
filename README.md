@@ -17,6 +17,7 @@ Full documentation is available at [https://qquotes.example.com](https://qquotes
 - **Speed**: Sub-millisecond quote retrieval.
 - **Type Safety**: Full TypeScript with strict mode.
 - **Reliability**: 100% test coverage.
+- **Personalization**: Manage your own approved quotes list with Git sync support.
 
 ## License
 

@@ -76,3 +76,16 @@ interface QuoteIndexes {
   }
 }
 ```
+
+## Storage Strategy
+
+### System Quotes
+- **Location**: `packages/data/src/quotes.json`
+- **Mutability**: Immutable for users. Updated through PRs to the main repository.
+- **Indexing**: Pre-indexed at build time for maximum performance.
+
+### Personal Quotes
+- **Location**: `packages/data/src/personal.json`
+- **Mutability**: Fully mutable via the `POST /personal` API endpoint.
+- **Shadowing**: If a quote is added with an ID that exists in the system database, the personal version **shadows** the system version. This allows users to "curate" or "edit" the global database for their own use.
+- **Merging**: At runtime, `QuoteStore` merges both sources, ensuring personal quotes take precedence. This deduplicated set is used for `all` mode.

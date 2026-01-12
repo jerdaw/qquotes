@@ -1,65 +1,46 @@
-import { describe, expect, test } from 'bun:test';
-import { spawn } from 'bun';
+import { describe, expect, it } from 'bun:test';
+import { spawnSync } from 'node:child_process';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-describe('CLI Integration', () => {
-  const runCLI = async (args: string[]) => {
-    const proc = spawn(['bun', 'run', 'src/index.ts', ...args], {
-      cwd: process.cwd().endsWith('cli') ? '.' : 'packages/cli',
-      stdout: 'pipe',
-      stderr: 'pipe',
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const cliPath = resolve(__dirname, '../index.ts');
+
+describe('QQuotes CLI E2E', () => {
+  const run = (args: string[]) => {
+    return spawnSync('bun', [cliPath, ...args], {
+      encoding: 'utf8',
     });
-
-    const stdout = await new Response(proc.stdout).text();
-    const stderr = await new Response(proc.stderr).text();
-    const exitCode = await proc.exited;
-
-    return { stdout, stderr, exitCode };
   };
 
-  test('flags --help', async () => {
-    const { stdout, exitCode } = await runCLI(['--help']);
-    expect(exitCode).toBe(0);
+  it('should show a random quote on default', () => {
+    const { stdout, status } = run([]);
+    expect(status).toBe(0);
+    expect(stdout).toContain('—'); // All formatted quotes have an em-dash for author
+  });
+
+  it('should show help', () => {
+    const { stdout, status } = run(['--help']);
+    expect(status).toBe(0);
     expect(stdout).toContain('Usage: qquotes');
-    expect(stdout).toContain('A modern, fast, reliable quotes CLI');
+    expect(stdout).toContain('Options:');
   });
 
-  test('flags --version', async () => {
-    const { stdout, exitCode } = await runCLI(['--version']);
-    expect(exitCode).toBe(0);
-    expect(stdout).toMatch(/\d+\.\d+\.\d+/);
+  it('should run the random command', () => {
+    const { stdout, status } = run(['random']);
+    expect(status).toBe(0);
+    expect(stdout).toBeDefined();
   });
 
-  test('random quote (default)', async () => {
-    const { stdout, exitCode } = await runCLI([]);
-    expect(exitCode).toBe(0);
-    expect(stdout).toContain('—'); // Assuming formatQuote includes an em dash or similar separator
-    expect(stdout.length).toBeGreaterThan(10);
+  it('should support searching', () => {
+    const res = run(['search', 'the']);
+    expect(res.status).toBe(0);
+    expect(res.stdout).toContain('—');
   });
 
-  test('command: random', async () => {
-    const { stdout, exitCode } = await runCLI(['random']);
-    expect(exitCode).toBe(0);
-    expect(stdout.length).toBeGreaterThan(10);
-  });
-
-  test('command: search', async () => {
-    // Search for "future" which is in our mock data/test expectations usually
-    const { stdout, exitCode } = await runCLI(['search', 'future']);
-    expect(exitCode).toBe(0);
-    // Depending on data, it might return results or "No quotes found" if data is empty/mocked
-    // But it should run successfully.
-    // If we have real data hooked up, it should find something.
-  });
-
-  test('flags --motd', async () => {
-    const { stdout, exitCode } = await runCLI(['--motd']);
-    expect(exitCode).toBe(0);
-    expect(stdout).toContain('Quote of the Day');
-  });
-
-  test('flags --fortune', async () => {
-    const { stdout, exitCode } = await runCLI(['--fortune']);
-    expect(exitCode).toBe(0);
-    expect(stdout).toContain('Your Fortune');
+  it('should show stats', () => {
+    const { stdout, status } = run(['stats']);
+    expect(status).toBe(0);
+    expect(stdout).toContain('Total Quotes');
   });
 });

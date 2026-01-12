@@ -13,15 +13,33 @@ import { streamText } from 'hono/streaming';
 // import { cors } from 'hono/cors'; // Removed
 
 import authors from './routes/authors';
+import personal from './routes/personal';
 // Import modular routes
 import quotes from './routes/quotes';
 import tags from './routes/tags';
+
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 // Import data
 import quotesData from '@qquotes/data/quotes' with { type: 'json' };
 
 // Initialize core store
-init({ quotes: quotesData });
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const personalDataPath = resolve(__dirname, '../../../data/src/personal.json');
+let personalQuotes = [];
+try {
+  const data = readFileSync(personalDataPath, 'utf-8');
+  personalQuotes = JSON.parse(data);
+} catch (e) {
+  console.log('No personal quotes found or could not read file. Starting with empty list.');
+}
+
+init({
+  quotes: quotesData,
+  personalQuotes: personalQuotes,
+});
 
 const app = new OpenAPIHono();
 
@@ -52,6 +70,7 @@ app.onError((err, c) => {
 app.route('/quotes', quotes);
 app.route('/authors', authors);
 app.route('/tags', tags);
+app.route('/personal', personal);
 
 // Stats route
 app.get('/stats', (c) => {

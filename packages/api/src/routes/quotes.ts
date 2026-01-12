@@ -35,8 +35,8 @@ const listQuotes = createRoute({
   summary: 'List quotes',
   request: {
     query: z.object({
-      limit: z.string().optional(),
-      offset: z.string().optional(),
+      limit: z.coerce.number().min(1).max(100).optional().default(20),
+      offset: z.coerce.number().min(0).optional().default(0),
       author: z.string().optional(),
       tag: z.string().optional(),
       q: z.string().optional(),
@@ -61,7 +61,8 @@ const randomQuotes = createRoute({
   summary: 'Get random quotes',
   request: {
     query: z.object({
-      count: z.string().optional(),
+      count: z.coerce.number().min(1).max(50).optional().default(1),
+      mode: z.enum(['all', 'personal', 'mixed']).optional(),
     }),
   },
   responses: {
@@ -109,10 +110,7 @@ const getQuoteById = createRoute({
 
 routes.openapi(listQuotes, (c) => {
   const q = getInstance();
-  const { limit: limitStr, offset: offsetStr, author, tag, q: query } = c.req.valid('query');
-
-  const limit = Number.parseInt(limitStr || '20');
-  const offset = Number.parseInt(offsetStr || '0');
+  const { limit, offset, author, tag, q: query } = c.req.valid('query');
 
   // biome-ignore lint/suspicious/noExplicitAny: Temporary loose typing
   let results: any;
@@ -139,13 +137,17 @@ routes.openapi(listQuotes, (c) => {
 
 routes.openapi(randomQuotes, (c) => {
   const q = getInstance();
-  const { count: countStr } = c.req.valid('query');
-  const count = Number.parseInt(countStr || '1');
+  const { count, mode } = c.req.valid('query');
+
+  // mode defaults to 'all' if undefined, which matches logic in store
+  // Cast mode to QuoteMode (zod enum ensures safety)
+  // biome-ignore lint/suspicious/noExplicitAny: explicit cast
+  const selectedMode = mode as any;
 
   if (count === 1) {
-    return c.json(q.random());
+    return c.json(q.random(selectedMode));
   }
-  return c.json(q.random(count));
+  return c.json(q.random(count, selectedMode));
 });
 
 routes.openapi(getQuoteById, (c) => {

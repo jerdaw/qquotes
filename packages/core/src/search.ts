@@ -17,8 +17,8 @@ export class QuoteSearchEngine {
       storeFields: ['id', 'text', 'author', 'tags'],
       searchOptions: {
         boost: { author: 2, tags: 1.5 },
-        fuzzy: 0.2,
         prefix: true,
+        combineWith: 'AND',
       },
     });
 
@@ -30,6 +30,18 @@ export class QuoteSearchEngine {
         tags: q.tags.join(' '),
       })),
     );
+  }
+
+  add(quote: Quote) {
+    if (this.miniSearch.has(quote.id)) {
+      this.miniSearch.discard(quote.id);
+    }
+    this.miniSearch.add({
+      id: quote.id,
+      text: quote.text,
+      author: quote.author,
+      tags: quote.tags.join(' '),
+    });
   }
 
   search(query: string, options?: SearchOptions): (Quote & { score: number })[] {

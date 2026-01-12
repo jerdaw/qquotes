@@ -68,4 +68,61 @@ describe('QQuotes Store', () => {
     expect(s.totalAuthors).toBe(2);
     expect(s.totalTags).toBe(4);
   });
+
+  describe('Personalization & Modes', () => {
+    const personalQuote: Quote = {
+      id: 'personal-1',
+      text: 'My personal quote',
+      author: 'Me',
+      tags: ['original'],
+      metadata: { addedAt: new Date().toISOString(), verified: false },
+    };
+
+    const shadowQuote: Quote = {
+      id: mockQuotes[0].id, // Same ID as system quote
+      text: 'Shadowed text',
+      author: 'Peter Drucker',
+      tags: ['shadow'],
+      metadata: { addedAt: new Date().toISOString(), verified: true },
+    };
+
+    test('initializes with personal quotes and shadows system ones', () => {
+      const store = init({
+        quotes: mockQuotes,
+        personalQuotes: [personalQuote, shadowQuote],
+      });
+
+      // shadowQuote overrides mockQuotes[0]
+      expect(store.get(mockQuotes[0].id)?.text).toBe('Shadowed text');
+      expect(store.get('personal-1')?.text).toBe('My personal quote');
+
+      // Total count should be system (2) + personal non-shadowing (1) = 3
+      expect(store.count()).toBe(3);
+    });
+
+    test('random("personal") returns only personal', () => {
+      const store = init({ quotes: mockQuotes, personalQuotes: [personalQuote] });
+      const result = store.random('personal');
+      expect(result.id).toBe('personal-1');
+    });
+
+    test('random("all") returns from merged pool', () => {
+      const store = init({ quotes: mockQuotes, personalQuotes: [personalQuote] });
+      const results = store.random(10, 'all');
+      expect(results).toHaveLength(3);
+      expect(results.map((r) => r.id)).toContain('personal-1');
+      expect(results.map((r) => r.id)).toContain(mockQuotes[0].id);
+    });
+
+    test('addPersonalQuote updates all structures and shadows', () => {
+      const store = init({ quotes: mockQuotes });
+      store.addPersonalQuote(shadowQuote);
+
+      expect(store.get(mockQuotes[0].id)?.text).toBe('Shadowed text');
+      expect(store.count()).toBe(2); // Still 2 because it shadowed
+
+      const personalResults = store.random(1, 'personal');
+      expect(personalResults[0].text).toBe('Shadowed text');
+    });
+  });
 });

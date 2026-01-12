@@ -16,6 +16,7 @@
     "validate": "bun run tools/validate.ts"
   },
   "devDependencies": {
+    "@qquotes/core": "workspace:^0.1.0",
     "@types/bun": "latest"
   }
 }

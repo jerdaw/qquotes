@@ -2,9 +2,9 @@ import { z } from '@hono/zod-openapi';
 
 // Minimalist schemas without .openapi() metadata to rule out evaluation errors
 export const QuoteSchema = z.object({
-  id: z.string(),
-  text: z.string(),
-  author: z.string(),
+  id: z.string().uuid(),
+  text: z.string().min(1).max(500),
+  author: z.string().min(1).max(100),
   tags: z.array(z.string()),
   score: z.number().optional(),
 });

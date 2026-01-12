@@ -7,8 +7,8 @@ export class QQuotes {
   constructor(options?: QQuotesOptions);
 
   // Basic retrieval
-  random(): Quote;
-  random(count: number): Quote[];
+  random(mode?: QuoteMode): Quote;
+  random(count: number, mode?: QuoteMode): Quote[];
   get(id: string): Quote | undefined;
   all(): Quote[];
 
@@ -17,18 +17,27 @@ export class QQuotes {
   byTag(tag: string): Quote[];
   byTags(tags: string[], mode?: 'all' | 'any'): Quote[];
 
-  // Random with filters
-  randomByAuthor(author: string): Quote | undefined;
-  randomByTag(tag: string): Quote | undefined;
-
-  // Search
-  search(query: string, options?: SearchOptions): Quote[];
+  // Personalization
+  addPersonalQuote(quote: Quote): void;
 
   // Metadata
   authors(): string[];
   tags(): string[];
   stats(): QuoteStats;
   count(): number;
+}
+
+export type QuoteMode = 'all' | 'personal' | 'mixed';
+
+export interface QQuotesOptions {
+  quotes?: Quote[];
+  personalQuotes?: Quote[];
+  indexes?: {
+    byAuthor?: Record<string, string[]>;
+    byTag?: Record<string, string[]>;
+    searchIndex?: string | object;
+  };
+  stats?: QuoteStats;
 }
 
 // Functional API (tree-shakeable)

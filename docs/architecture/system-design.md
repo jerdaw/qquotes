@@ -18,15 +18,24 @@ graph TD
 
     subgraph Data Package
         Data[Data Package<br>@qquotes/data<br>~100KB]
-        Files[quotes.json<br>quotes.min.json<br>indexes]
+        SystemFiles[quotes.json<br>Pre-indexed]
+        PersonalFile[personal.json<br>User Curated]
     end
 
     API --> Core
     CLI --> Core
     NPM --> Core
     Core --> Data
-    Data --> Files
+    Data --> SystemFiles
+    Data --> PersonalFile
+    API -- Writes --> PersonalFile
 ```
+
+## Key Concepts
+
+### Shadowing & Merging
+The `QuoteStore` acts as a unified facade over both system-provided and user-created quotes. By using a "Shadowing" model, users can override any system quote by saving a quote with the same ID to their `personal.json`. This provides a powerful way to customize the dataset without modifying the core distribution.
+
 
 ## Technology Stack
 
