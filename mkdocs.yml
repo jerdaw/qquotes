@@ -1,8 +1,8 @@
 site_name: QQuotes
 site_description: A modern, fast, reliable quotes library and API.
 site_url: https://qquotes.example.com
-repo_url: https://github.com/dwyl/quotes
-repo_name: dwyl/quotes
+repo_url: https://github.com/jerdaw/qquotes
+repo_name: jerdaw/qquotes
 
 theme:
   name: material
