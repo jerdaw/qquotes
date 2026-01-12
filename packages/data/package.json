@@ -1,0 +1,21 @@
+{
+  "name": "@qquotes/data",
+  "version": "0.1.0",
+  "description": "Quote data for @qquotes/core",
+  "type": "module",
+  "exports": {
+    "./quotes": "./generated/quotes.min.json",
+    "./index-author": "./generated/index.by-author.json",
+    "./index-tag": "./generated/index.by-tag.json",
+    "./search-index": "./generated/search-index.json",
+    "./stats": "./generated/stats.json"
+  },
+  "files": ["generated"],
+  "scripts": {
+    "build": "bun run tools/build-indexes.ts",
+    "validate": "bun run tools/validate.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}

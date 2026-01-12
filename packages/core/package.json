@@ -1,0 +1,50 @@
+{
+  "name": "@qquotes/core",
+  "version": "0.1.0",
+  "description": "Modern, fast, reliable quotes library (logic only, no data)",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "test": "bun test",
+    "bench": "bun run src/__bench__/index.ts",
+    "typecheck": "tsc --noEmit",
+    "type-coverage": "type-coverage --strict --ignore-catch --at-least 100"
+  },
+  "dependencies": {
+    "minisearch": "^7.1.1",
+    "zod": "3.23.8"
+  },
+  "peerDependencies": {
+    "@qquotes/data": "workspace:^0.1.0"
+  },
+  "peerDependenciesMeta": {
+    "@qquotes/data": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^11.2.0",
+    "@types/bun": "latest",
+    "mitata": "^1.0.34",
+    "size-limit": "^11.2.0",
+    "tsup": "^8.3.5",
+    "type-coverage": "^2.29.7"
+  },
+  "size-limit": [
+    {
+      "path": "dist/index.js",
+      "limit": "5 KB"
+    }
+  ]
+}

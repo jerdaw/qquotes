@@ -1,0 +1,27 @@
+{
+  "name": "@qquotes/api",
+  "version": "0.1.0",
+  "description": "REST API for QQuotes",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev src/index.ts",
+    "deploy": "wrangler deploy src/index.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hono/zod-openapi": "1.1.0",
+    "@qquotes/core": "workspace:^0.1.0",
+    "@qquotes/data": "workspace:^0.1.0",
+    "@scalar/hono-api-reference": "^0.9.32",
+    "hono": "^4.6.19",
+    "hono-pino": "^0.7.1",
+    "hono-rate-limiter": "^0.5.3",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250109.1",
+    "@types/bun": "latest",
+    "wrangler": "^3.101.0"
+  }
+}

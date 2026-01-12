@@ -1,0 +1,23 @@
+node_modules
+.DS_Store
+dist
+.turbo
+*.log
+.env
+.env.*
+!.env.example
+.vercel
+.wrangler
+.changeset
+packages/data/generated/*.json
+
+# Documentation
+site/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+env/
+venv/
+

@@ -1,0 +1,10 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      run: pnpm biome check --staged
+    typecheck:
+      run: pnpm typecheck
+    validate-quotes:
+      glob: "packages/data/src/quotes.json"
+      run: pnpm --filter @qquotes/data validate
