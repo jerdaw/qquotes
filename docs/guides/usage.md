@@ -50,4 +50,40 @@ Response:
   "author": "...",
   "tags": ["..."]
 }
+```json
+{
+  "id": "...",
+  "text": "...",
+  "author": "...",
+  "tags": ["..."]
+}
+```
+
+## CLI Usage
+
+The QQuotes CLI provides a powerful way to interact with your collection directly from the terminal.
+
+### Fetching New Quotes
+
+You can expand your local collection by fetching quotes from any compatible JSON API:
+
+```bash
+qquotes fetch https://dummyjson.com/quotes/random
+```
+
+Fetched quotes are stored locally in `~/.config/qquotes/quotes.json` and are available even when you are offline.
+
+### Mixing Personal and System Quotes
+
+Use the `--mode` flag to control which quotes are displayed:
+
+```bash
+# Only from the default system library
+qquotes random --mode system
+
+# Only from quotes you've fetched or added
+qquotes random --mode personal
+
+# An even mix of both
+qquotes random --mode mixed
 ```

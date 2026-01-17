@@ -7,8 +7,8 @@ export class QQuotes {
   private systemQuotes: Quote[];
   private personalQuotes: Quote[];
   private idMap: Map<string, Quote>;
-  private authorMap: Map<string, string[]>;
-  private tagMap: Map<string, string[]>;
+  private authorMap: Map<string, Set<string>>;
+  private tagMap: Map<string, Set<string>>;
   private searchEngine: QuoteSearchEngine;
   private _stats?: QuoteStats | undefined;
 
@@ -31,27 +31,33 @@ export class QQuotes {
 
     if (options.indexes?.byAuthor) {
       for (const [author, ids] of Object.entries(options.indexes.byAuthor)) {
-        this.authorMap.set(author.toLowerCase(), ids);
+        this.authorMap.set(author.toLowerCase(), new Set(ids));
       }
     } else {
       for (const quote of this.quotes) {
         const authorKey = quote.author.toLowerCase();
-        const ids = this.authorMap.get(authorKey) || [];
-        ids.push(quote.id);
-        this.authorMap.set(authorKey, ids);
+        let ids = this.authorMap.get(authorKey);
+        if (!ids) {
+          ids = new Set();
+          this.authorMap.set(authorKey, ids);
+        }
+        ids.add(quote.id);
       }
     }
 
     if (options.indexes?.byTag) {
       for (const [tag, ids] of Object.entries(options.indexes.byTag)) {
-        this.tagMap.set(tag, ids);
+        this.tagMap.set(tag, new Set(ids));
       }
     } else {
       for (const quote of this.quotes) {
         for (const tag of quote.tags) {
-          const ids = this.tagMap.get(tag) || [];
-          ids.push(quote.id);
-          this.tagMap.set(tag, ids);
+          let ids = this.tagMap.get(tag);
+          if (!ids) {
+            ids = new Set();
+            this.tagMap.set(tag, ids);
+          }
+          ids.add(quote.id);
         }
       }
     }
@@ -163,23 +169,29 @@ export class QQuotes {
 
   byAuthor(author: string): Quote[] {
     const authorKey = author.toLowerCase();
-    const ids = this.authorMap.get(authorKey) || [];
-    return ids.map((id) => this.idMap.get(id)).filter((q): q is Quote => !!q);
+    const ids = this.authorMap.get(authorKey);
+    if (!ids) return [];
+    return Array.from(ids)
+      .map((id) => this.idMap.get(id))
+      .filter((q): q is Quote => !!q);
   }
 
   byTag(tag: string): Quote[] {
-    const ids = this.tagMap.get(tag) || [];
-    return ids.map((id) => this.idMap.get(id)).filter((q): q is Quote => !!q);
+    const ids = this.tagMap.get(tag);
+    if (!ids) return [];
+    return Array.from(ids)
+      .map((id) => this.idMap.get(id))
+      .filter((q): q is Quote => !!q);
   }
 
   byTags(tags: string[], mode: 'all' | 'any' = 'any'): Quote[] {
     if (mode === 'any') {
-      const ids = new Set(tags.flatMap((t) => this.tagMap.get(t) || []));
+      const ids = new Set(tags.flatMap((t) => Array.from(this.tagMap.get(t) || [])));
       return Array.from(ids)
         .map((id) => this.idMap.get(id))
         .filter((q): q is Quote => !!q);
     }
-    const idArrays = tags.map((t) => this.tagMap.get(t) || []);
+    const idArrays = tags.map((t) => Array.from(this.tagMap.get(t) || []));
     if (idArrays.length === 0) return [];
     const commonIds = idArrays.reduce((a, b) => a.filter((c) => b.includes(c)));
     return commonIds.map((id) => this.idMap.get(id)).filter((q): q is Quote => !!q);
@@ -210,11 +222,11 @@ export class QQuotes {
       avgQuoteLength:
         this.quotes.reduce((acc, q) => acc + q.text.length, 0) / (this.quotes.length || 1),
       topAuthors: Array.from(this.authorMap.entries())
-        .map(([author, ids]) => ({ author, count: ids.length }))
+        .map(([author, ids]) => ({ author, count: ids.size }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 10),
       topTags: Array.from(this.tagMap.entries())
-        .map(([tag, ids]) => ({ tag, count: ids.length }))
+        .map(([tag, ids]) => ({ tag, count: ids.size }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 10),
     };
@@ -225,40 +237,31 @@ export class QQuotes {
   }
 
   addPersonalQuote(quote: Quote) {
-    // If ID exists:
-    // 1. If in personalQuotes, we update it? (Not implemented, assume append for now or check)
-    // 2. If in systemQuotes, we are "shadowing" it.
+    // Check if quote already exists to handle updates correctly (remove old index entries)
+    const existingQuote = this.idMap.get(quote.id);
+    if (existingQuote) {
+      // Remove from old author index
+      const oldAuthorKey = existingQuote.author.toLowerCase();
+      this.authorMap.get(oldAuthorKey)?.delete(quote.id);
 
-    // Remove checks that forbid ID existence to allow "Approving/Copying"
-    // However, if we support true shadowing, we need to update the derived lists.
+      // Remove from old tag indices
+      for (const tag of existingQuote.tags) {
+        this.tagMap.get(tag)?.delete(quote.id);
+      }
+    }
 
-    // Update internal lists
-    // Check if it's already in personal list?
+    // Update in-memory personal list
     const existingPersonalIndex = this.personalQuotes.findIndex((q) => q.id === quote.id);
     if (existingPersonalIndex >= 0) {
-      // Update existing
       this.personalQuotes[existingPersonalIndex] = quote;
     } else {
       this.personalQuotes.push(quote);
     }
 
-    // Re-sync the main 'quotes' list and maps
-    // This is expensive but correct. For personal quotes (rare writes), it's fine.
-
     // Update ID Map (shadows system if exists)
     this.idMap.set(quote.id, quote);
 
-    // Rebuild 'quotes' list to ensure correct precedence/shadowing
-    // Optimization: Just ensure it's in the list?
-    // If it was in system but not personal, it was in 'quotes'.
-    // Now it's in personal (and shadowed system), it should still be in 'quotes' but pointing to new object?
-    // Map handles object reference. Array needs update.
-    // Simplifying: Just pushing to 'quotes' creates duplicates in array.
-    // We should probably filter.
-    // Let's rely on map for 'get'.
-    // For 'all' and 'random', we use 'this.quotes'.
-    // We need to replace the object in this.quotes if it exists.
-
+    // Update global 'quotes' list
     const existingGlobalIndex = this.quotes.findIndex((q) => q.id === quote.id);
     if (existingGlobalIndex >= 0) {
       this.quotes[existingGlobalIndex] = quote;
@@ -266,21 +269,29 @@ export class QQuotes {
       this.quotes.push(quote);
     }
 
+    // Add to new author index
     const authorKey = quote.author.toLowerCase();
-    const authorIds = this.authorMap.get(authorKey) || [];
-    authorIds.push(quote.id);
-    this.authorMap.set(authorKey, authorIds);
+    let authorIds = this.authorMap.get(authorKey);
+    if (!authorIds) {
+      authorIds = new Set();
+      this.authorMap.set(authorKey, authorIds);
+    }
+    authorIds.add(quote.id);
 
+    // Add to new tag indices
     for (const tag of quote.tags) {
-      const tagIds = this.tagMap.get(tag) || [];
-      tagIds.push(quote.id);
-      this.tagMap.set(tag, tagIds);
+      let tagIds = this.tagMap.get(tag);
+      if (!tagIds) {
+        tagIds = new Set();
+        this.tagMap.set(tag, tagIds);
+      }
+      tagIds.add(quote.id);
     }
 
     // Update Search Index
     this.searchEngine.add(quote);
 
     // Invalidate stats cache
-    this._stats = undefined; // Force recalculation on next call
+    this._stats = undefined;
   }
 }

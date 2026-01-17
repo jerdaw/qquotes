@@ -2,9 +2,9 @@ pre-commit:
   parallel: true
   commands:
     lint:
-      run: pnpm biome check --staged
+      run: npx pnpm biome check --staged
     typecheck:
-      run: pnpm typecheck
+      run: npx pnpm typecheck
     validate-quotes:
       glob: "packages/data/src/quotes.json"
-      run: pnpm --filter @qquotes/data validate
+      run: npx pnpm --filter @qquotes/data validate

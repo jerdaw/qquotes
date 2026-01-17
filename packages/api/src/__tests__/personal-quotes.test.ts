@@ -4,9 +4,18 @@ import { describe, expect, it, mock } from 'bun:test';
 const mockWriteFile = mock(() => Promise.resolve());
 const mockReadFile = mock(() => Promise.resolve('[]'));
 
+const mockRename = mock(() => Promise.resolve());
+
+mock.module('fs/promises', () => ({
+  readFile: mockReadFile,
+  writeFile: mockWriteFile,
+  rename: mockRename,
+}));
+
 mock.module('node:fs/promises', () => ({
   readFile: mockReadFile,
   writeFile: mockWriteFile,
+  rename: mockRename,
 }));
 
 const { default: app } = await import('../index');

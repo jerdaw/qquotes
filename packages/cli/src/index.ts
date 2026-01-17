@@ -6,9 +6,11 @@ import { formatQuote } from './utils';
 import listCmd from './commands/list';
 import { authorsCommand, statsCommand, tagsCommand } from './commands/meta';
 // Import commands
+import fetchCmd from './commands/fetch';
 import randomCmd from './commands/random';
 import searchCmd from './commands/search';
 
+import { ConfigManager } from './config';
 import byAuthor from '@qquotes/data/index-author' with { type: 'json' };
 import byTag from '@qquotes/data/index-tag' with { type: 'json' };
 // Import data
@@ -17,6 +19,8 @@ import searchIndex from '@qquotes/data/search-index' with { type: 'json' };
 import stats from '@qquotes/data/stats' with { type: 'json' };
 
 const program = new Command();
+
+const personalQuotes = await ConfigManager.loadPersonalQuotes();
 
 const q = init({
   // biome-ignore lint/suspicious/noExplicitAny: JSON import types not inferred
@@ -31,6 +35,7 @@ const q = init({
   },
   // biome-ignore lint/suspicious/noExplicitAny: JSON import types not inferred
   stats: stats as any,
+  personalQuotes,
 });
 
 program
@@ -74,9 +79,10 @@ program
 
 program.addCommand(randomCmd);
 program.addCommand(searchCmd);
+program.addCommand(fetchCmd);
 program.addCommand(listCmd);
 program.addCommand(authorsCommand);
 program.addCommand(tagsCommand);
 program.addCommand(statsCommand);
 
-program.parse(process.argv);
+program.parseAsync(process.argv);

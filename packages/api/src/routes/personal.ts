@@ -1,16 +1,12 @@
-import { readFile, writeFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { readFile } from 'node:fs/promises';
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
 import { type Quote, getInstance } from '@qquotes/core';
 import { QuoteSchema } from '../schemas';
+import { config } from '../config';
+import { AtomicWriter, storageLock } from '../utils/storage';
 
 const app = new OpenAPIHono();
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const personalDataPath = resolve(__dirname, '../../../../data/src/personal.json');
-
-let isWriting = false;
+const writer = new AtomicWriter(config.data.personalPath);
 
 const CreateQuoteSchema = z.object({
   id: z.string().uuid().optional(),
@@ -30,9 +26,6 @@ const route = createRoute({
         },
       },
       description: 'Quote added successfully',
-    },
-    409: {
-      description: 'Quote ID already exists',
     },
     429: {
       description: 'Concurrent write limit exceeded',
@@ -70,47 +63,39 @@ app.openapi(route, async (c) => {
     },
   };
 
-  // Removed collision check to allow updates/shadowing
-  // if (store.get(id)) { ... }
-
-  // Simple concurrency lock
-  if (isWriting) {
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    if (isWriting) {
-      return c.json({ error: 'Concurrent write limit exceeded' }, 429);
-    }
-  }
-
-  isWriting = true;
   try {
-    // Upate in-memory store
-    store.addPersonalQuote(newQuote);
+    // Use the serializing lock for all write operations
+    return await storageLock.runExclusive(async () => {
+      // Update in-memory store
+      store.addPersonalQuote(newQuote);
 
-    // Persist to disk
-    let fileContent: Quote[] = [];
-    try {
-      const data = await readFile(personalDataPath, 'utf-8');
-      fileContent = JSON.parse(data);
-    } catch (e) {
-      // Create new if missing or invalid
-      console.warn('Could not read personal.json, starting fresh', e);
-    }
+      // Persist to disk
+      let fileContent: Quote[] = [];
+      try {
+        const data = await readFile(config.data.personalPath, 'utf-8');
+        fileContent = JSON.parse(data);
+      } catch (e) {
+        // Start fresh if file missing/invalid
+        console.warn('Could not read personal.json, starting fresh');
+      }
 
-    // Check for existing ID in fileContent and replace if found
-    const existingIndex = fileContent.findIndex((q) => q.id === id);
-    if (existingIndex >= 0) {
-      fileContent[existingIndex] = newQuote;
-    } else {
-      fileContent.push(newQuote);
-    }
-    await writeFile(personalDataPath, JSON.stringify(fileContent, null, 2));
+      // Check for existing ID in fileContent and replace if found
+      const existingIndex = fileContent.findIndex((q) => q.id === id);
+      if (existingIndex >= 0) {
+        fileContent[existingIndex] = newQuote;
+      } else {
+        fileContent.push(newQuote);
+      }
 
-    return c.json(newQuote, 200);
+      // Atomic write to disk
+      await writer.write(JSON.stringify(fileContent, null, 2));
+
+      return c.json(newQuote, 200);
+    });
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e);
+    console.error('Persistence failed:', e);
     return c.json({ error: message }, 500);
-  } finally {
-    isWriting = false;
   }
 });
 

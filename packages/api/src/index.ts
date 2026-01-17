@@ -18,22 +18,37 @@ import personal from './routes/personal';
 import quotes from './routes/quotes';
 import tags from './routes/tags';
 
-import { readFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { readFileSync, existsSync } from 'node:fs';
+import { QuoteSchema } from './schemas';
+import { config } from './config';
+import { z } from 'zod';
 
 // Import data
 import quotesData from '@qquotes/data/quotes' with { type: 'json' };
 
 // Initialize core store
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const personalDataPath = resolve(__dirname, '../../../data/src/personal.json');
 let personalQuotes = [];
-try {
-  const data = readFileSync(personalDataPath, 'utf-8');
-  personalQuotes = JSON.parse(data);
-} catch (e) {
-  console.log('No personal quotes found or could not read file. Starting with empty list.');
+const personalPath = config.data.personalPath;
+
+if (existsSync(personalPath)) {
+  try {
+    const data = readFileSync(personalPath, 'utf-8');
+    const parsed = JSON.parse(data);
+    
+    // Validate on startup
+    const result = z.array(QuoteSchema).safeParse(parsed);
+    if (result.success) {
+      personalQuotes = result.data;
+      console.log(`Loaded ${personalQuotes.length} validated personal quotes.`);
+    } else {
+      console.error('Data Integrity Error: personal.json failed validation!');
+      console.error(result.error.format());
+      // For now, we load what we can or start empty to prevent crash, 
+      // but in production this might stop the server.
+    }
+  } catch (e) {
+    console.error('Failed to read personal quotes:', e);
+  }
 }
 
 init({

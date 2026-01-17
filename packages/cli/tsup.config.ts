@@ -10,4 +10,5 @@ export default defineConfig({
   banner: {
     js: '#!/usr/bin/env node',
   },
+  noExternal: ['@qquotes/core', '@qquotes/data'],
 });

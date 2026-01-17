@@ -6,6 +6,7 @@ import { type OutputFormat, formatQuotes } from '../utils';
 const command = new Command('random')
   .description('Get random quote(s)')
   .option('-n, --count <number>', 'Number of quotes to return', '1')
+  .option('-m, --mode <mode>', 'Quote mode (all, system, personal, mixed)', 'all')
   .option('-t, --tag <tag>', 'Filter by tag')
   .option('-a, --author <author>', 'Filter by author')
   .option('-f, --format <format>', 'Output format (text, json, markdown)', 'text')
@@ -20,7 +21,14 @@ const command = new Command('random')
     } else if (options.author) {
       results = q.byAuthor(options.author);
     } else {
-      results = q.all();
+      // Use core random with mode support if no filters
+      // Note: q.random returns single item if count is 1, array if > 1 or forced.
+      // But here we want strictly array for consistency for formatQuotes
+      const quotes = q.random(count, options.mode);
+      results = Array.isArray(quotes) ? quotes : [quotes];
+      // Skip manual shuffle since q.random handles it
+      console.log(formatQuotes(results, options.format as OutputFormat));
+      return;
     }
 
     if (results.length === 0) {

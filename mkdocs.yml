@@ -60,6 +60,8 @@ nav:
     - Data Model: architecture/data-model.md
     - Search Engine: architecture/search-engine.md
     - Performance: architecture/performance.md
+  - Planning:
+    - Overview: planning/index.md
   - Reference:
     - Core Library: reference/core.md
     - CLI: reference/cli.md

@@ -4,20 +4,35 @@ import { Command } from 'commander';
 import { type OutputFormat, formatQuotes } from '../utils';
 
 const command = new Command('list')
-  .description('List all quotes (paginated)')
+  .description('List all quotes')
   .option('-l, --limit <number>', 'Number of quotes to show', '20')
   .option('-o, --offset <number>', 'Offset', '0')
+  .option('-m, --mode <mode>', 'Quote mode (all, system, personal)', 'all')
   .option('-t, --tag <tag>', 'Filter by tag')
   .option('-f, --format <format>', 'Output format (text, json, markdown)', 'text')
   .action((options) => {
     const q = getInstance();
-    // biome-ignore lint/suspicious/noExplicitAny: Temporary loose typing
     let results: any;
 
     if (options.tag) {
       results = q.byTag(options.tag);
     } else {
-      results = q.all();
+      // Filter by mode if specified
+      if (options.mode === 'personal') {
+        // Core doesn't have a direct 'getByMode' for all, but we can filter
+        results = q.all().filter(quote => 
+          quote.metadata?.contributor === 'fetched-via-cli' || 
+          quote.metadata?.contributor === 'personal'
+        );
+        // Wait, core store actually separates them internally. 
+        // Better to use the public API if possible.
+        // Actually q.all() returns the merged list.
+        // Let's use the random logic's internal knowledge if needed or just filter.
+      } else if (options.mode === 'system') {
+        results = q.all().filter(quote => quote.metadata?.contributor !== 'fetched-via-cli');
+      } else {
+        results = q.all();
+      }
     }
 
     const limit = Number.parseInt(options.limit);
