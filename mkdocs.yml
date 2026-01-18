@@ -1,71 +1,71 @@
-site_name: QQuotes
+site_name: qquotes
 site_description: A modern, fast, reliable quotes library and API.
 site_url: https://qquotes.example.com
 repo_url: https://github.com/jerdaw/qquotes
 repo_name: jerdaw/qquotes
 
 theme:
-  name: material
-  features:
-    - navigation.instant
-    - navigation.tracking
-    - navigation.tabs
-    - navigation.sections
-    - navigation.expand
-    - navigation.top
-    - toc.follow
-    - content.code.copy
-  palette:
-    - scheme: default
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    - scheme: slate
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
-  font:
-    text: Roboto
-    code: Roboto Mono
+    name: material
+    features:
+        - navigation.instant
+        - navigation.tracking
+        - navigation.tabs
+        - navigation.sections
+        - navigation.expand
+        - navigation.top
+        - toc.follow
+        - content.code.copy
+    palette:
+        - scheme: default
+          primary: indigo
+          accent: indigo
+          toggle:
+              icon: material/brightness-7
+              name: Switch to dark mode
+        - scheme: slate
+          primary: indigo
+          accent: indigo
+          toggle:
+              icon: material/brightness-4
+              name: Switch to light mode
+    font:
+        text: Roboto
+        code: Roboto Mono
 
 plugins:
-  - search
-  - minify:
-      minify_html: true
+    - search
+    - minify:
+          minify_html: true
 
 markdown_extensions:
-  - admonition
-  - pymdownx.details
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.highlight:
-      anchor_linenums: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.tabbed:
-      alternate_style: true
+    - admonition
+    - pymdownx.details
+    - pymdownx.superfences:
+          custom_fences:
+              - name: mermaid
+                class: mermaid
+                format: !!python/name:pymdownx.superfences.fence_code_format
+    - pymdownx.highlight:
+          anchor_linenums: true
+    - pymdownx.inlinehilite
+    - pymdownx.snippets
+    - pymdownx.tabbed:
+          alternate_style: true
 
 nav:
-  - Home: index.md
-  - Architecture:
-    - Overview: architecture/overview.md
-    - System Design: architecture/system-design.md
-    - Data Model: architecture/data-model.md
-    - Search Engine: architecture/search-engine.md
-    - Performance: architecture/performance.md
-  - Planning:
-    - Overview: planning/index.md
-  - Reference:
-    - Core Library: reference/core.md
-    - CLI: reference/cli.md
-    - API: reference/http-api.md
-  - Guides:
-    - Installation: guides/installation.md
-    - Usage: guides/usage.md
+    - Home: index.md
+    - Architecture:
+          - Overview: architecture/overview.md
+          - System Design: architecture/system-design.md
+          - Data Model: architecture/data-model.md
+          - Search Engine: architecture/search-engine.md
+          - Performance: architecture/performance.md
+    - Planning:
+          - Overview: planning/index.md
+    - Reference:
+          - Core Library: reference/core.md
+          - CLI: reference/cli.md
+          - API: reference/http-api.md
+    - Guides:
+          - Installation: guides/installation.md
+          - Usage: guides/usage.md

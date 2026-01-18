@@ -1,23 +1,23 @@
-export * from './schema';
-export * from './store';
-export * from './search';
-export * from './types';
-export * from './random';
-export * from './query';
+export * from "./schema";
+export * from "./store";
+export * from "./search";
+export * from "./types";
+export * from "./random";
+export * from "./query";
 
-import { QQuotes } from './store';
-import type { QQuotesOptions } from './types';
+import { qquotes } from "./store";
+import type { qquotesOptions } from "./types";
 
-let instance: QQuotes | null = null;
+let instance: qquotes | null = null;
 
-export function init(options: QQuotesOptions) {
-  instance = new QQuotes(options);
-  return instance;
+export function init(options: qquotesOptions) {
+    instance = new qquotes(options);
+    return instance;
 }
 
 export function getInstance() {
-  if (!instance) {
-    throw new Error('QQuotes not initialized. Call init() first.');
-  }
-  return instance;
+    if (!instance) {
+        throw new Error("qquotes not initialized. Call init() first.");
+    }
+    return instance;
 }

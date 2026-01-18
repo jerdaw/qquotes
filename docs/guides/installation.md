@@ -2,33 +2,33 @@
 
 ## Core Library
 
-To use QQuotes in your Node.js, Bun, or Deno project:
+To use qquotes in your Node.js, Bun, or Deno project:
 
 === "npm"
-    ```bash
+`bash
     npm install @qquotes/core
-    ```
+    `
 
 === "pnpm"
-    ```bash
+`bash
     pnpm add @qquotes/core
-    ```
+    `
 
 === "bun"
-    ```bash
+`bash
     bun add @qquotes/core
-    ```
+    `
 
 ## CLI Tool
 
 To install the command-line interface globally:
 
 === "npm"
-    ```bash
+`bash
     npm install -g @qquotes/cli
-    ```
+    `
 
 === "bun"
-    ```bash
+`bash
     bunx @qquotes/cli
-    ```
+    `

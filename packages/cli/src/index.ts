@@ -10,6 +10,7 @@ import fetchCmd from './commands/fetch';
 import { interactiveCommand } from './commands/interactive';
 import randomCmd from './commands/random';
 import searchCmd from './commands/search';
+import personalCmd from './commands/personal';
 
 import { ConfigManager } from './config';
 import byAuthor from '@qquotes/data/index-author' with { type: 'json' };
@@ -83,6 +84,7 @@ program.addCommand(interactiveCommand);
 program.addCommand(searchCmd);
 program.addCommand(fetchCmd);
 program.addCommand(listCmd);
+program.addCommand(personalCmd);
 program.addCommand(authorsCommand);
 program.addCommand(tagsCommand);
 program.addCommand(statsCommand);

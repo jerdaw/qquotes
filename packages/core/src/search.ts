@@ -44,6 +44,10 @@ export class QuoteSearchEngine {
     });
   }
 
+  discard(id: string): void {
+    this.miniSearch.discard(id);
+  }
+
   search(query: string, options?: SearchOptions): (Quote & { score: number })[] {
     const results = this.miniSearch.search(query, {
       ...options,

@@ -1,4 +1,4 @@
-# QQuotes
+# qquotes
 
 A modern, fast, reliable quotes library and API.
 
@@ -6,14 +6,14 @@ A modern, fast, reliable quotes library and API.
 
 ## Features
 
-- **Speed**: Sub-millisecond quote retrieval with pre-built indexes.
-- **Type Safety**: Full TypeScript with strict mode, zod validation, and generated types.
-- **Reliability**: 100% test coverage on core logic.
-- **Modern DX**: Tree-shakeable ESM, excellent IDE support, minimal dependencies.
-- **Multi-platform**: npm package, REST API, CLI.
+-   **Speed**: Sub-millisecond quote retrieval with pre-built indexes.
+-   **Type Safety**: Full TypeScript with strict mode, zod validation, and generated types.
+-   **Reliability**: 100% test coverage on core logic.
+-   **Modern DX**: Tree-shakeable ESM, excellent IDE support, minimal dependencies.
+-   **Multi-platform**: npm package, REST API, CLI.
 
 ## Quick Links
 
-- [Getting Started](guides/installation.md)
-- [Architecture Overview](architecture/overview.md)
-- [API Reference](reference/http-api.md)
+-   [Getting Started](guides/installation.md)
+-   [Architecture Overview](architecture/overview.md)
+-   [API Reference](reference/http-api.md)

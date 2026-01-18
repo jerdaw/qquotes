@@ -108,7 +108,7 @@ app.get('/stream', (c) => {
 app.doc('/openapi.json', {
   openapi: '3.1.0',
   info: {
-    title: 'QQuotes API',
+    title: 'qquotes API',
     version: '1.0.0',
     description: 'A modern, fast, reliable quotes library and API.',
   },
@@ -140,7 +140,7 @@ app.get(
 // Home route
 app.get('/', (c) => {
   return c.json({
-    message: 'Welcome to QQuotes API',
+    message: 'Welcome to qquotes API',
     docs: '/doc',
   });
 });

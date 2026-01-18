@@ -1,4 +1,4 @@
-# QQuotes
+# qquotes
 
 A modern, fast, reliable quotes library and API.
 
@@ -8,18 +8,18 @@ A modern, fast, reliable quotes library and API.
 
 Full documentation is available at [https://qquotes.example.com](https://qquotes.example.com) (or run locally with `npm run docs:serve`).
 
-- [Getting Started](docs/guides/installation.md)
-- [Architecture Overview](docs/architecture/overview.md)
-- [API Reference](docs/reference/http-api.md)
+-   [Getting Started](docs/guides/installation.md)
+-   [Architecture Overview](docs/architecture/overview.md)
+-   [API Reference](docs/reference/http-api.md)
 
 ## Features
 
-- **Speed**: Sub-millisecond quote retrieval.
-- **Type Safety**: Full TypeScript with strict mode.
-- **Reliability**: 100% test coverage.
-- **Interactive CLI**: Menu-driven terminal interface to browse and search quotes.
-- **Modern Docs**: Beautiful documentation site built with Next.js.
-- **Personalization**: Manage your own approved quotes list with Git sync support.
+-   **Speed**: Sub-millisecond quote retrieval.
+-   **Type Safety**: Full TypeScript with strict mode.
+-   **Reliability**: 100% test coverage.
+-   **Interactive CLI**: Menu-driven terminal interface to browse and search quotes.
+-   **Modern Docs**: Beautiful documentation site built with Next.js.
+-   **Personalization**: Manage your own approved quotes list with Git sync support.
 
 ## License
 

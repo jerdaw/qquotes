@@ -37,7 +37,7 @@ export const interactiveCommand = new Command('interactive')
     });
 
     console.clear();
-    console.log(chalk.bold.blue('Welcome to QQuotes Interactive Mode! 🚀'));
+    console.log(chalk.bold.blue('Welcome to qquotes Interactive Mode! 🚀'));
 
     let running = true;
 
