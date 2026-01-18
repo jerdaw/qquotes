@@ -10,7 +10,9 @@ dist
 .wrangler
 .changeset
 packages/data/generated/*.json
-
+.next/
+out/
+build/
 # Documentation
 site/
 

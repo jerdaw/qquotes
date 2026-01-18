@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignore": ["dist", ".turbo", "node_modules", "packages/data/generated"]
+    "ignore": ["dist", ".turbo", "node_modules", "packages/data/generated", ".next"]
   },
   "organizeImports": {
     "enabled": true

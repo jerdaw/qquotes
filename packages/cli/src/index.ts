@@ -7,6 +7,7 @@ import listCmd from './commands/list';
 import { authorsCommand, statsCommand, tagsCommand } from './commands/meta';
 // Import commands
 import fetchCmd from './commands/fetch';
+import { interactiveCommand } from './commands/interactive';
 import randomCmd from './commands/random';
 import searchCmd from './commands/search';
 
@@ -78,6 +79,7 @@ program
   });
 
 program.addCommand(randomCmd);
+program.addCommand(interactiveCommand);
 program.addCommand(searchCmd);
 program.addCommand(fetchCmd);
 program.addCommand(listCmd);

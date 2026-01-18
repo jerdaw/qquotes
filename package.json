@@ -15,6 +15,7 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "typecheck": "turbo typecheck",
+    "release": "turbo build && changeset publish",
     "prepare": "lefthook install"
   },
   "devDependencies": {
